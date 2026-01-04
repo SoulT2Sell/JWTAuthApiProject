@@ -16,10 +16,21 @@ namespace JWTProject.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(LoginRequest request)
+        public async Task<ActionResult<TokensResponse>> Login(LoginRequest request)
         {
             var response = await services.LoginAsync(request);
             return response == null ? BadRequest("Username Or Password Is Incorrect!") : Ok(response);
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<ActionResult<TokensResponse>> RefreshToken(RefreshTokenRequest request)
+        {
+            var response = await services.RefreshTokensAsync(request);
+
+            if(response is null || response.AccessToken is null || response.RefreshToken is null)
+                return Unauthorized("Invalid Refresh Token!");
+
+            return Ok(response);
         }
 
         [Authorize]
